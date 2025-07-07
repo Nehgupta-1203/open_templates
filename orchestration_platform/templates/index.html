@@ -3,19 +3,79 @@
 
 <div class="main-content">
   <h2 class="text-center mb-4">Enter VM Credentials</h2>
-  <form method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 400px;">
-    <div class="mb-3">
-      <label class="form-label">IPv4:</label>
-      <input type="text" name="ip" class="form-control" required>
+  <form method="POST" enctype="multipart/form-data" class="row row-cols-lg-auto g-3 align-items-center justify-content-center mb-4">
+    <div class="col-auto">
+      <label class="visually-hidden" for="ipInput">IPv4</label>
+      <input type="text" name="ip" id="ipInput" class="form-control" placeholder="IPv4" required>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Port:</label>
-      <input type="text" name="port" class="form-control" required>
+    <div class="col-auto">
+      <label class="visually-hidden" for="portInput">Port</label>
+      <input type="text" name="port" id="portInput" class="form-control" placeholder="Port" required>
     </div>
-    <!-- <div class="mb-3">
-      <label class="form-label">PEM key:</label>
-      <input type="file" name="pem" class="form-control">
-    </div> -->
-    <input type="submit" value="Connect" class="btn btn-primary w-100">
+    <div class="col-auto">
+      <label class="visually-hidden" for="pemInput">PEM key</label>
+      <input type="file" name="pem" id="pemInput" class="form-control">
+    </div>
+    <div class="col-auto">
+      <input type="submit" value="Connect" class="btn btn-primary">
+    </div>
   </form>
+  {% if show_deploy %}
+  <hr class="my-5">
+  <h2 class="text-center mb-4">Deploy Docker Container</h2>
+  <div class="container mb-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+      {% for image in templates %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ image.repo_name }}</h5>
+            <p class="card-text">{{ image.description }}</p>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">⭐ {{ image.star_count }} | ⬇️ {{ image.pull_count }}</small>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form method="POST" id="deployForm" class="mx-auto" style="max-width: 400px;">
+      <input type="hidden" name="image" id="selectedImage">
+      <div class="mb-3">
+        <label class="form-label">Port to Expose:</label>
+        <input type="text" name="port" class="form-control mb-3" required>
+      </div>
+      <input type="submit" value="Deploy" class="btn btn-primary w-100">
+  </form>
+
+  <script>
+    // Add click event to each card to select the image
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.card');
+      let selected = null;
+      cards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function() {
+          // Remove highlight from previous
+          if (selected) selected.classList.remove('border-primary', 'border-3');
+          // Highlight current
+          card.classList.add('border-primary', 'border-3');
+          selected = card;
+          // Set hidden input value
+          const repoName = card.querySelector('.card-title').textContent.trim();
+          document.getElementById('selectedImage').value = repoName;
+        });
+      });
+      // Prevent form submit if no image selected
+      document.getElementById('deployForm').addEventListener('submit', function(e) {
+        if (!document.getElementById('selectedImage').value) {
+          e.preventDefault();
+          alert('Please select an image from the grid.');
+        }
+      });
+    });
+  </script>
+  {% endif %}
 </div>

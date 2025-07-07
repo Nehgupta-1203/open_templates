@@ -18,6 +18,8 @@ def ssh_client(ip,port,pem_file_path):
 
 @app.route('/',methods=['GET','POST'])
 def index():
+    show_deploy = False
+    docker_images = []
     if request.method == 'POST':
         ip = request.form['ip']
         port = int(request.form['port'])
@@ -31,11 +33,13 @@ def index():
             session['ip'] = ip
             session['port'] = port
             # session['pem_file_path'] = pem_file_path
-            return redirect(url_for('deploy'))
+            show_deploy = True
+            docker_images = fetch_images_from_docker_hub()
+
         except Exception as ex:
             return f"Connection failed: {str(ex)}"
         
-    return render_template('index.html')
+    return render_template('index.html', show_deploy=show_deploy, templates=docker_images)
 
 def fetch_images_from_docker_hub(query="machine_learning",page_size=10):
     url = f"https://hub.docker.com/v2/search/repositories/?query={query}&page_size={page_size}"
@@ -54,48 +58,6 @@ def fetch_images_from_docker_hub(query="machine_learning",page_size=10):
     except Exception as ex:
         print("Error fetching docker images", ex)
     return []
-
-@app.route('/deploy',methods=['GET','POST'])
-def deploy():
-    # if 'ip' not in session:
-    #     return redirect(url_for('index'))
-    docker_images = fetch_images_from_docker_hub()
-    if request.method == 'POST':
-        template = request.form['template']
-        container_port = request.form['container_port']
-        
-        ip = session['ip']
-        port = session['port']
-        # pem_file_path = session['pem_file_path']
-
-        try:
-            # ssh = ssh_client(ip,port, pem_file_path)
-            # docker_run_cmd =f"docker run-d -p {container_port}:{container_port} {template}"
-            # stdin, stdout, stderr = ssh.exec_command(docker_run_cmd)
-            # ssh.close()
-            return redirect(url_for('dashboard'))
-        except Exception as ex:
-            return f"Failed to run contaner: {str(ex)}"
-        
-    return render_template('deploy.html', templates=docker_images)
-
-@app.route('/dashboard')
-def dashboard():
-    if 'ip' not in session:
-        return redirect(url_for('index'))
-    ip = session['ip']
-    port_ssh = session['port']
-    pem_file_path = session['pem_file_path']
-
-    try:
-        ssh = ssh_client(ip,port_ssh, pem_file_path)
-        docker_ps = "docker ps --format "
-        stdin, stdout, stderr = ssh.exec_command(docker_ps)
-        output = stdout.read().decode()
-        ssh.close()
-        return render_template('dashboard.html',output=output)
-    except Exception as ex:
-        return f"Failed to retrieve running containers: {str(ex)}"
 
     
 
