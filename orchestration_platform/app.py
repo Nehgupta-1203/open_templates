@@ -1,8 +1,7 @@
-import uuid
-from flask import Flask, request, render_template, session, jsonify
+from flask import Flask, request, session, jsonify
 import os
 from werkzeug.utils import secure_filename
-from orchestration_platform.utils.ssh_client_wrapper import ssh_connection, run_command_in_ssh, list_containers_running_on_machine, close_connection
+from orchestration_platform.utils.ssh_client_wrapper import ssh_connection, run_command_in_ssh, close_connection
 from orchestration_platform.utils.docker_wrapper import fetch_images_from_docker_hub, get_docker_run_command, get_all_docker_containers_cmd
 
 
@@ -123,9 +122,6 @@ def container_dashboard():
         return jsonify({'success': True, 'containers': containers}), 200
     except Exception as ex:
         return jsonify({'success': False, 'error': f'Error fetching containers: {str(ex)}'}), 500
-
-
-
     
 
-
+# close ssh connection when user close session

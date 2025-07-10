@@ -40,27 +40,3 @@ def close_connection(ssh):
     except Exception as e:
         raise Exception(f"Failed to close SSH connection: {str(e)}")
     
-
-
-
-
-def run_docker_container(ssh, image_name):
-    try:
-        cmd = f"docker run -d --rm {image_name}"
-        stdin, stdout, stderr = ssh.exec_command(cmd)
-        exit_status = stdout.channel.recv_exit_status()  # Wait for command to finish
-        if exit_status != 0:
-            raise Exception(f"Error running container: {stderr.read().decode()}")
-        return stdout.read().decode().strip()  # Return container ID
-    except Exception as e:
-        raise Exception(f"Failed to run Docker container: {str(e)}")
-
-def list_containers_running_on_machine(ssh):
-    try:
-        stdin, stdout, stderr = ssh.exec_command("docker ps -a --format '{{.ID}}: {{.Image}}: {{.Status}}'")
-        exit_status = stdout.channel.recv_exit_status()  # Wait for command to finish
-        if exit_status != 0:
-            raise Exception(f"Error listing containers: {stderr.read().decode()}")
-        return stdout.read().decode().strip().split('\n')  # Return list of containers
-    except Exception as e:
-        raise Exception(f"Failed to list Docker containers: {str(e)}")
