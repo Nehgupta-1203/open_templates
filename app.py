@@ -1,8 +1,8 @@
 from flask import Flask, request, session, jsonify
 import os
 from werkzeug.utils import secure_filename
-from orchestration_platform.utils.ssh_client_wrapper import ssh_connection, run_command_in_ssh, close_connection
-from orchestration_platform.utils.docker_wrapper import fetch_images_from_docker_hub, get_docker_run_command, get_all_docker_containers_cmd
+from utils.ssh_client_wrapper import ssh_connection, run_command_in_ssh, close_connection
+from utils.docker_wrapper import fetch_images_from_docker_hub, get_docker_run_command, get_all_docker_containers_cmd
 
 
 app = Flask(__name__)
