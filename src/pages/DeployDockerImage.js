@@ -3,7 +3,7 @@ import {TextField, Button, Typography, Grid, Paper, Box, Alert} from '@mui/mater
 import axios from 'axios';
 
 const defaultImages = [
-    "tensorflow/tensorflow:latest",
+     "tensorflow/tensorflow:latest",
 
 ]
 
@@ -43,50 +43,50 @@ export default function DeployDockerImage() {
     }
 
     return (
-           <Box sx ={{maxWidth: 900, mx: 'auto', mt: 8, p: 4}}>
-               <Typography variant="h5" align="center" gutterBottom>
-                   Deploy Docker Image 
-               </Typography>
-               {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
-               {deployStatus && <Alert severity='success' sx={{mb: 2}}>{deployStatus}</Alert> }
-               <Box sx={{display: "flex", gap:2, mb:3}}>
-                   <TextField
-                       label="Search Docker Images"
-                       value={search}
-                       onChange={(e) => setSearch(e.target.value)}
-                       fullWidth
-                   />
-                   <Button variant="contained" onClick={handleSearch} disabled={!search}> Search</Button>
-               </Box>
-               <Grid container spacing={2}>
-                   {images.map(img=>(
-                       <Grid item xs={12} sm={6} md={4} key={img}>
-                   <Paper
-                       onClick={() => setSelected(img)}
-                       sx={{
-                           p: 2,
-                           cursor: 'pointer',
-                           border: selected === img ? '2px solid #1976d2' : '1px solid #ccc',
-                           backgroundColor: selected === img ? '#e3f2fd' : '#fff',
-                       }}
-                       elevation={selected === img ? 6 : 1}
-                       >
-                           <Typography>{img}</Typography>
-                       </Paper>
-               </Grid>
-                   ))}
-               </Grid>
-               <Box sx={{mt:3}}>
-                   <Button
-                       variant="contained"
-                       color="primary"
-                       onClick={handleDeploy}
-                       disabled={!selected || deploying}
-                       >
-                           {deploying ? 'Deploying...' : 'Deploy Image'}
-                       </Button>
-               </Box>
-               </Box>
-   
-       );
+        <Box sx ={{maxWidth: 900, mx: 'auto', mt: 8, p: 4}}>
+            <Typography variant="h5" align="center" gutterBottom>
+                Deploy Docker Image 
+            </Typography>
+            {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
+            {deployStatus && <Alert severity='success' sx={{mb: 2}}>{deployStatus}</Alert> }
+            <Box sx={{display: "flex", gap:2, mb:3}}>
+                <TextField
+                    label="Search Docker Images"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    fullWidth
+                />
+                <Button variant="contained" onClick={handleSearch} disabled={!search}> Search</Button>
+            </Box>
+            <Grid container spacing={2}>
+                {images.map(img=>(
+                    <Grid item xs={12} sm={6} md={4} key={img.repo_name}>
+                <Paper
+                    onClick={() => setSelected(img.repo_name)}
+                    sx={{
+                        p: 2,
+                        cursor: 'pointer',
+                        border: selected === img.repo_name ? '2px solid #1976d2' : '1px solid #ccc',
+                        backgroundColor: selected === img.repo_name ? '#e3f2fd' : '#fff',
+                    }}
+                    elevation={selected === img.repo_name ? 6 : 1}
+                    >
+                        <Typography>{img.repo_name}</Typography>
+                    </Paper>
+            </Grid>
+                ))}
+            </Grid>
+            <Box sx={{mt:3}}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleDeploy}
+                    disabled={!selected || deploying}
+                    >
+                        {deploying ? 'Deploying...' : 'Deploy Image'}
+                    </Button>
+            </Box>
+            </Box>
+
+    );
 }
