@@ -36,7 +36,7 @@ def connect_vm():
 
 @app.route('/search_images', methods=['GET'])
 def search_images():
-    image_query_str = request.args.get('image_name')
+    image_query_str = request.args.get('query')
     # for default AI/ML images we can create a predefined list.
     try:
         if not image_query_str:
