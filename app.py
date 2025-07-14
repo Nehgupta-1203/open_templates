@@ -27,10 +27,10 @@ def connect_vm():
 
     try:
         ssh_client = ssh_connection(ip, port, username, pem_file_path)
-        session_id = session.sid
+        # session_id = session.sid
         #  understand  what needs to be stored in session
-        ssh_clients[session_id] = ssh_client 
-        session['vm_connected'] = True
+        # ssh_clients[session_id] = ssh_client 
+        # session['vm_connected'] = True
         return jsonify({'success': True}), 200
     except Exception as ex:
         return jsonify({'success': False ,'error': f'Connection failed: {str(ex)}'}), 500

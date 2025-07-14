@@ -39,11 +39,11 @@ export default function ConnectToVM() {
 
             const response = await axios.post('/', data, {headers: {'Content-Type': 'multipart/form-data'}});
             if (response.data.success) {
-                setIsConnected(true);
+                // setIsConnected(true);
                 navigate('/deploy');
             } else {
                 setError(response.data.message || 'Connection failed');
-                setIsConnected(false);
+                // setIsConnected(false);
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Connection failed');
