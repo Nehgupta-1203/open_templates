@@ -16,16 +16,17 @@ ssh_clients = []
 def connect_vm():
     ip = request.form.get('ip')
     port = int(request.form.get('port'))
-    pem_file = request.files.get('pem_key')
+    username = request.form.get('username')
+    pem_file = request.files.get('pemKey')
 # add validation for ip, port, and pem_file
-    if not all([ip, port, pem_file]):
+    if not all([ip, port,username, pem_file]):
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
     
     pem_file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(pem_file.filename))
     pem_file.save(pem_file_path)
 
     try:
-        ssh_client = ssh_connection(ip, port, pem_file_path)
+        ssh_client = ssh_connection(ip, port, username, pem_file_path)
         session_id = session.sid
         #  understand  what needs to be stored in session
         ssh_clients[session_id] = ssh_client 
@@ -39,15 +40,11 @@ def search_images():
     image_query_str = request.args.get('query')
     # for default AI/ML images we can create a predefined list.
     try:
-        if not image_query_str:
-            default_images = fetch_images_from_docker_hub()
-            return jsonify({'images': default_images}), 200
-        else:
-            # Fetch images from Docker Hub based on the query string
-            images = fetch_images_from_docker_hub(query=image_query_str)
-            if not images:
-                return jsonify({'images': [], 'error': 'No images found'}), 404
-            return jsonify({'images': images}), 200
+        # Fetch images from Docker Hub based on the query string
+        images = fetch_images_from_docker_hub(query=image_query_str)
+        if not images:
+            return jsonify({'images': [], 'error': 'No images found'}), 404
+        return jsonify({'images': images}), 200
     except Exception as ex:
         return jsonify({'images': [], 'error': f'Error fetching images: {str(ex)}'}), 500
 

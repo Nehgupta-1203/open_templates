@@ -10,9 +10,9 @@ def fetch_images_from_docker_hub(query="machine_learning",page_size=10):
         data = response.json()
         images = [{
             'repo_name': item['repo_name'],
-            # 'description': item.get('description', ''),
-            # 'pull_count': item.get('pull_count', 0),
-            # 'star_count': item.get('star_count', 0)
+            'description': item.get('short_description', ''),
+            'pull_count': item.get('pull_count', 0),
+            'star_count': item.get('star_count', 0)
         }
         for item in data['results']
         ]

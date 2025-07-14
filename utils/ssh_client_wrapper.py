@@ -1,11 +1,11 @@
 import paramiko
 
-def ssh_connection(ip,port,pem_file_path):
+def ssh_connection(ip,port,username,pem_file_path):
     try:
         ssh_client =paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         pkey = paramiko.RSAKey.from_private_key_file(pem_file_path)
-        ssh_client.connect(ip,port=port,pkey=pkey)
+        ssh_client.connect(ip,port=port,username=username,pkey=pkey)
         return ssh_client
     except Exception as e:
         raise Exception(f"Failed to connect to {ip}:{port} - {str(e)}")

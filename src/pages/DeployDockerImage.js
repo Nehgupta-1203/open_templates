@@ -1,16 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import {TextField, Button, Typography, Grid, Paper, Box, Alert} from '@mui/material';
+import {TextField, Button, Typography, Grid, Paper, Box, Alert, Card, CardContent,CardActions, CardActionArea} from '@mui/material';
 import axios from 'axios';
+import StarIcon from '@mui/icons-material/Star';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const defaultImages = [
-     "tensorflow/tensorflow:latest",
-
+//      "tensorflow/tensorflow:latest",
+//  "tensorflow/tensorflow:latest",
+//   "tensorflow/tensorflow:latest",
+//    "tensorflow/tensorflow:latest",
 ]
 
 
 export default function DeployDockerImage() {
     const [search, setSearch] = useState('');
     const [images, setImages] = useState(defaultImages);
+    const [tag, setImageTag] = useState('latest');
+    const [entrypoint, setEntryPoint] = useState('');
+    const [cpus, setCpus] = useState('1');
+    const [memory, setMemory] = useState('512m');
+    const [shmSize, setSHMSize] = useState('64m');
     const [selected, setSelected] = useState('');
     const [deploying, setDeploying] = useState(false);
     const [deployStatus, setDeployStatus] = useState('');
@@ -58,24 +67,88 @@ export default function DeployDockerImage() {
                 />
                 <Button variant="contained" onClick={handleSearch} disabled={!search}> Search</Button>
             </Box>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
                 {images.map(img=>(
                     <Grid item xs={12} sm={6} md={4} key={img.repo_name}>
-                <Paper
-                    onClick={() => setSelected(img.repo_name)}
-                    sx={{
-                        p: 2,
-                        cursor: 'pointer',
-                        border: selected === img.repo_name ? '2px solid #1976d2' : '1px solid #ccc',
-                        backgroundColor: selected === img.repo_name ? '#e3f2fd' : '#fff',
-                    }}
-                    elevation={selected === img.repo_name ? 6 : 1}
-                    >
-                        <Typography>{img.repo_name}</Typography>
-                    </Paper>
-            </Grid>
+                        <Box sx={{position: 'relative', width: '100%', paddingTop: '100%', minWidth:200, minHeight: 200}}>
+                        <Card 
+                        elevation={selected === img.repo_name ? 6 : 1}
+                        // variant={selected === img.repo_name ? 'outlined' : 'elevation'}
+                            sx={{border:selected === img.repo_name ? '2px solid #1976d2' : 'none',
+                                background: selected === img.repo_name ? '#e3f2fd' : '#fff',
+                                cursor: 'pointer',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                p: 2,
+                                boxSizing: 'border-box',
+                                transition: "border 0.2s"
+                                }}
+                            onClick={() => setSelected(img.repo_name)}>
+                                <Box>
+                                    <Typography variant ='h6' gutterBottom noWrap>{img.repo_name}</Typography>
+                                    <Typography variant="body2" color="text.secondary" sx={{mb: 2}}> {img.description || 'No description provided'}</Typography>
+
+                                </Box>
+                                <Box sx={{display:'flex', alignItems:'center', gap:2, mt:'auto'}}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        <StarIcon fontSize="small" sx={{ verticalAlign: "middle", color: "#fbc02d" }} /> {img.star_count}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        <DownloadIcon fontSize="small" sx={{ verticalAlign: "middle" }} /> {img.pull_count}
+                                    </Typography>
+                                </Box>
+                                {/* <CardActionArea>
+                                <CardContent>
+                                    <Typography variant="h6" component="div" gutterBottom>
+                                    {img.repo_name}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                    {img.description || "No description provided."}
+                                    </Typography>
+                                </CardContent>
+                                </CardActionArea>
+                                <CardActions sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                    <StarIcon fontSize="small" sx={{ verticalAlign: "middle", color: "#fbc02d" }} /> {img.star_count}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                    <DownloadIcon fontSize="small" sx={{ verticalAlign: "middle" }} /> {img.pull_count}
+                                    </Typography>
+                                </Box>
+                                </CardActions> */}
+
+                         </Card>
+                         </Box>
+                    </Grid>
                 ))}
+            {/* <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField label="Image Tag" value={tag} onChange={e=>setImageTag(e.target.value)} fullWidth/>
+                </Grid>
+                 <Grid item xs={12} sm={6} md={4}>
+                    <TextField label="Entrypoint" value={entrypoint} onChange={e=>setEntryPoint(e.target.value)} fullWidth/>
+                </Grid>
+                 <Grid item xs={12} sm={6} md={4}>
+                    <TextField label="CPUs" value={cpus} onChange={e=>setCpus(e.target.value)} fullWidth/>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField label="Memory" value={memory} onChange={e=>setMemory(e.target.value)} fullWidth/>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField label="SHM size" value={shmSize} onChange={e=>setSHMSize(e.target.value)} fullWidth/>
+                </Grid>
+
+            </Grid> */}
             </Grid>
+
             <Box sx={{mt:3}}>
                 <Button
                     variant="contained"
