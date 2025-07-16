@@ -10,7 +10,7 @@ export default function ConnectToVM() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    // const {setIsConnected} = useVM();
+    const {setIsConnected} = useVM();
 
     const handleChange = (e) => {
         setForm({...form, [e.target.name]: e.target.value});
@@ -22,7 +22,7 @@ export default function ConnectToVM() {
 
     const handleConnect = async(e) => {
         e.preventDefault();
-        setLoading(true);
+        setLoading(True);
         setError('');
 
         if(!form.ip || !form.port || !form.username || !pemFile) {
@@ -30,23 +30,18 @@ export default function ConnectToVM() {
             setLoading(false);
             return;
         }
+        const data = new FormData();
+        data.append('ip', form.ip);
+        data.append('port', form.port);
+        data.append('username',form.username);
+        data.append('pemKey', pemFile);
         try {
-            const data = new FormData();
-            data.append('ip', form.ip);
-            data.append('port', form.port);
-            data.append('username',form.username);
-            data.append('pemKey', pemFile);
-
             const response = await axios.post('/', data, {headers: {'Content-Type': 'multipart/form-data'}});
-            if (response.data.success) {
-                // setIsConnected(true);
-                navigate('/deploy');
-            } else {
-                setError(response.data.message || 'Connection failed');
-                // setIsConnected(false);
-            }
+            setIsConnected(true);
+            navigate('/deploy');
         } catch (err) {
             setError(err.response?.data?.message || 'Connection failed');
+            setIsConnected(false);
         } finally {
             setLoading(false);
         }

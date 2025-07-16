@@ -4,6 +4,7 @@ import DnsIcon from '@mui/icons-material/Dns';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import {Link, useLocation} from "react-router-dom";
+import {useVM} from "./VMContext";
 
 
 const menu = [
@@ -13,11 +14,13 @@ const menu = [
 ];
 
 export default function Sidebar() {
+    const {isConnected} = useVM();
+    const location = useLocation();
     return(
         <Drawer variant="permanent" sx={{width: 240, flexShrink: 0, "& .MuiDrawer-paper": {width: 240, boxSizing: "border-box", background: "#121212", color: "#fff"}}}>
             <List>
                 {menu.map((item) => {
-                    const enabled = item.alwaysEnabled
+                    const enabled = item.alwaysEnabled || isConnected
                     return(
                          <ListItem
                           button

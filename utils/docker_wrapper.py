@@ -52,5 +52,11 @@ def get_docker_run_command(image_name, tag='latest', container_name=None, ports=
     docker_run_cmd += [f"{image_name}:{tag}"] 
     return ' '.join(docker_run_cmd)
 
-def get_all_docker_containers_cmd():
-   return"docker ps -a --format '{{.ID}}: {{.Image}}: {{.Status}}'"
+def fetch_all_docker_containers_cmd():
+   return"docker ps -a --format json --no-trunc"
+
+def restart_docker_container_cmd(container_id):
+    return f"docker restart {container_id}"
+
+def stop_docker_container_cmd(container_id):
+    return f"docker stop {container_id}"

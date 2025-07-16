@@ -21,7 +21,7 @@ export function VMProvider({children}) {
     // };
 
     return (
-        <VMContext.Provider value={{isConnected, vmDetails, connectToVM, disconnectFromVM}}>
+        <VMContext.Provider value={{isConnected, setIsConnected}}>
             {children}
         </VMContext.Provider>
     );
