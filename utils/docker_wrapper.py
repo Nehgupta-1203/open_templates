@@ -20,33 +20,37 @@ def fetch_images_from_docker_hub(query="machine_learning",page_size=10):
     except Exception as ex:
         return []
     
-def get_docker_run_command(image_name, tag='latest', container_name=None, ports=None, env_vars=None,
+def get_docker_run_command(image_name, tag,volumes=None,container_name=None, ports=None, env_vars=None,
                            entrypoint=None, num_of_cpus=None, memory_limit=None, shm_size=None,runtime='normal',
                            gpus=None, restart_policy=None, enable_ipc_host=False, enable_priviliged=False):
     docker_run_cmd = ['docker', 'run', '-d']
-    if container_name:
+    if tag in ("", None):
+        tag = 'latest'
+    if not volumes in ("",None):
+        docker_run_cmd += ['-v', volumes]
+    if not container_name in ("", None):
         docker_run_cmd += ['--name', container_name]
     for port in ports:
         docker_run_cmd += ['-p', port]
     for env_var in env_vars:
         docker_run_cmd += ['--env', env_var]
-    if num_of_cpus:
+    if not num_of_cpus in ("", None):
         docker_run_cmd += ['--cpus', str(num_of_cpus)]
-    if memory_limit:
+    if not memory_limit in ("", None):
         docker_run_cmd += ['--memory', memory_limit]
-    if shm_size:
+    if not shm_size in ("", None):
         docker_run_cmd += ['--shm-size', shm_size]
     if runtime == 'nvidia':
         docker_run_cmd += ['--runtime', 'nvidia']
-        if gpus:
+        if gpus in ("", None):
             docker_run_cmd += ['--gpus', str(gpus)]
-    if entrypoint:
+    if not entrypoint in ("", None):
         docker_run_cmd += ['--entrypoint', entrypoint]
-    if restart_policy:
+    if not restart_policy in ("", None):
         docker_run_cmd += ['--restart', restart_policy]
-    if enable_ipc_host:
+    if not enable_ipc_host in ("", None):
         docker_run_cmd += ['--ipc=host']
-    if enable_priviliged:
+    if not enable_priviliged in ("", None):
         docker_run_cmd += ['--privileged']
 
     docker_run_cmd += [f"{image_name}:{tag}"] 

@@ -22,7 +22,7 @@ export default function ConnectToVM() {
 
     const handleConnect = async(e) => {
         e.preventDefault();
-        setLoading(True);
+        setLoading(true);
         setError('');
 
         if(!form.ip || !form.port || !form.username || !pemFile) {

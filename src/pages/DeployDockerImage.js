@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Typography, Grid, Box, Alert, Card, FormControlLabel, Checkbox, Collapse, Tooltip, Select, MenuItem
- } from '@mui/material';
+import {
+    TextField, Button, Typography, Grid, Box, Alert, Card, FormControlLabel, Checkbox, Collapse, Tooltip, Select, MenuItem
+} from '@mui/material';
 import axios from 'axios';
 import StarIcon from '@mui/icons-material/Star';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -24,6 +25,7 @@ export default function DeployDockerImage() {
     const [advancedEnabled, setAdvancedEnabled] = useState(false);
     const [dockerOptions, setDockerOptions] = useState({
         containerName: "",
+        tag: "",
         ports: "",
         volumes: "",
         envVars: "",
@@ -38,13 +40,13 @@ export default function DeployDockerImage() {
         enable_priviliged: ""
     })
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setDockerOptions((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setDockerOptions((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
 
     const handleSearch = async () => {
         setError('');
@@ -64,13 +66,14 @@ export default function DeployDockerImage() {
         setDeployStatus('');
         setError('');
         try {
-            const response = await axios.post('/deploy', {image: selected, dockerOptions}, {headers: {'Content-Type': 'application/json'}});
-            setDeployStatus('Success');
+            const response = await axios.post('/deploy', { image: selected, dockerOptions }, { headers: { 'Content-Type': 'application/json' } });
+            setDeployStatus(`Successfully deployed docker container ${selected}`);
         } catch (err) {
             setError('Deployment failed');
-            setDeployStatus('Failed')
         }
-        setDeploying(false);
+        finally {
+            setDeploying(false);
+        }
     }
 
     return (
@@ -133,182 +136,223 @@ export default function DeployDockerImage() {
                 ))}
             </Grid>
             {/* Checkbox to toggle advanced options */}
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={advancedEnabled}
-            onChange={()=>{setAdvancedEnabled(!advancedEnabled)}}
-            color="primary"
-          />
-        }
-        label="Enable Advanced Docker Run Options"
-      />
-
-      {/* Smooth collapse animation to reveal advanced options */}
-      <Collapse in={advancedEnabled} timeout="auto" unmountOnExit>
-      <Box component="dl" sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          
-          {/* Container Name */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Container Name:</Typography>
-            <TextField
-              name="containerName"
-              value={dockerOptions.containerName}
-              onChange={handleChange}
-              fullWidth
-              size="small"
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={advancedEnabled}
+                        onChange={() => { setAdvancedEnabled(!advancedEnabled) }}
+                        color="primary"
+                        disabled={!selected}
+                    />
+                }
+                label="Enable Advanced Docker Run Options"
             />
-          </Box>
 
-          {/* Ports with Tooltip */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>
-              Port:
-              <Tooltip title="Input one or multiple ports, comma-separated. e.g. 80:80,443:443">
-                <InfoOutlinedIcon fontSize="small" sx={{ ml: 1, verticalAlign: 'middle', cursor: 'pointer' }} />
-              </Tooltip>
-            </Typography>
-            <TextField
-              name="ports"
-              value={dockerOptions.ports}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+            {/* Smooth collapse animation to reveal advanced options */}
+            <Collapse in={advancedEnabled} timeout="auto" unmountOnExit>
+                <Box component="dl" sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-          {/* Environment Variables with Tooltip */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>
-              Environment Variables:
-              <Tooltip title="Separate multiple values with commas. E.g. ENV1=value1,ENV2=value2">
-                <InfoOutlinedIcon fontSize="small" sx={{ ml: 1, verticalAlign: 'middle', cursor: 'pointer' }} />
-              </Tooltip>
-            </Typography>
-            <TextField
-              name="envVars"
-              value={dockerOptions.envVars}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+                    {/* Container Name */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Container Name:</Typography>
+                        <TextField
+                            name="containerName"
+                            value={dockerOptions.containerName}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
 
-          {/* CPUs */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Number of CPUs:</Typography>
-            <TextField
-              name="cpus"
-              value={dockerOptions.cpus}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+                    {/* TAG */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>TAG:</Typography>
+                        <TextField
+                            name="tag"
+                            value={dockerOptions.tag}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
 
-          {/* Memory */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Memory Limit:</Typography>
-            <TextField
-              name="memory"
-              value={dockerOptions.memory}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+                    {/* Ports with Tooltip */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>
+                            Port:
+                            <Tooltip title="Input one or multiple ports, comma-separated. e.g. 80:80,443:443">
+                                <InfoOutlinedIcon fontSize="small" sx={{ ml: 1, verticalAlign: 'middle', cursor: 'pointer' }} />
+                            </Tooltip>
+                        </Typography>
+                        <TextField
+                            name="ports"
+                            value={dockerOptions.ports}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
 
-          {/* Runtime */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Runtime:</Typography>
-            <TextField
+                    {/* Voumes */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Volumes:</Typography>
+                        <TextField
+                            name="volumes"
+                            value={dockerOptions.volumes}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    {/* Environment Variables with Tooltip */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>
+                            Environment Variables:
+                            <Tooltip title="Separate multiple values with commas. E.g. ENV1=value1,ENV2=value2">
+                                <InfoOutlinedIcon fontSize="small" sx={{ ml: 1, verticalAlign: 'middle', cursor: 'pointer' }} />
+                            </Tooltip>
+                        </Typography>
+                        <TextField
+                            name="envVars"
+                            value={dockerOptions.envVars}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    {/* CPUs */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Number of CPUs:</Typography>
+                        <TextField
+                            name="cpus"
+                            value={dockerOptions.cpus}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    {/* Memory */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Memory Limit:</Typography>
+                        <TextField
+                            name="memory"
+                            value={dockerOptions.memory}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    {/* Runtime */}
+                    {/* <Box>
+            <Typography component="dt" fontWeight={600}>IPC Mode:</Typography>
+            <Select
               name="runtime"
-              value={dockerOptions.runtime}
-              onChange={handleChange}
+              value={dockerOptions.ipc}
+              label="Runtime"
               fullWidth
               size="small"
-            />
-          </Box>
-
-          {/* GPUs conditionally shown */}
-          {dockerOptions.runtime === 'nvidia' && (
-            <Box>
-              <Typography component="dt" fontWeight={600}>Number of GPUs:</Typography>
-              <TextField
-                name="gpus"
-                value={dockerOptions.gpus}
-                onChange={handleChange}
-                fullWidth
-                size="small"
-              />
-            </Box>
-          )}
-
-          {/* Entrypoint */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Entrypoint:</Typography>
-            <TextField
-              name="entrypoint"
-              value={dockerOptions.entrypoint}
               onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+            >
+              <MenuItem value="normal">Normal</MenuItem>
+              <MenuItem value="nvidia">NVIDIA</MenuItem>
+              <MenuItem value="shareable">shareable</MenuItem>
+              <MenuItem value="host">host</MenuItem>
+            </Select>
+          </Box> */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Runtime:</Typography>
+                        <TextField
+                            name="runtime"
+                            value={dockerOptions.runtime}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
 
-          {/* Restart Policy */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Restart Policy:</Typography>
-            <TextField
-              name="restartPolicy"
-              value={dockerOptions.restartPolicy}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-              placeholder="e.g. always, on-failure, unless-stopped, no"
-            />
-          </Box>
+                    {/* GPUs conditionally shown */}
+                    {dockerOptions.runtime === 'nvidia' && (
+                        <Box>
+                            <Typography component="dt" fontWeight={600}>Number of GPUs:</Typography>
+                            <TextField
+                                name="gpus"
+                                value={dockerOptions.gpus}
+                                onChange={handleChange}
+                                fullWidth
+                                size="small"
+                            />
+                        </Box>
+                    )}
 
-          {/* SHM Size */}
-          <Box>
-            <Typography component="dt" fontWeight={600}>Shared Memory Size (shm-size):</Typography>
-            <TextField
-              name="shmSize"
-              value={dockerOptions.shmSize}
-              onChange={handleChange}
-              fullWidth
-              size="small"
-            />
-          </Box>
+                    {/* Entrypoint */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Entrypoint:</Typography>
+                        <TextField
+                            name="entrypoint"
+                            value={dockerOptions.entrypoint}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
 
-          {/* Privileged Checkbox */}
-          <Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="privileged"
-                  checked={dockerOptions.privileged}
-                  onChange={handleChange}
-                />
-              }
-              label="Enable Privileged Mode"
-            />
-          </Box>
+                    {/* Restart Policy */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Restart Policy:</Typography>
+                        <TextField
+                            name="restartPolicy"
+                            value={dockerOptions.restartPolicy}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                            placeholder="e.g. always, on-failure, unless-stopped, no"
+                        />
+                    </Box>
 
-          {/* IPC Mode */}
-           <Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="enable_ipc_host"
-                  checked={dockerOptions.enable_ipc_host}
-                  onChange={handleChange}
-                />
-              }
-              label="Enable IPC Host"
-            />
-          </Box>
-          {/* <Box>
+                    {/* SHM Size */}
+                    <Box>
+                        <Typography component="dt" fontWeight={600}>Shared Memory Size (shm-size):</Typography>
+                        <TextField
+                            name="shmSize"
+                            value={dockerOptions.shmSize}
+                            onChange={handleChange}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    {/* Privileged Checkbox */}
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="privileged"
+                                    checked={dockerOptions.privileged}
+                                    onChange={handleChange}
+                                />
+                            }
+                            label="Enable Privileged Mode"
+                        />
+                    </Box>
+
+                    {/* IPC Mode */}
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="enable_ipc_host"
+                                    checked={dockerOptions.enable_ipc_host}
+                                    onChange={handleChange}
+                                />
+                            }
+                            label="Enable IPC Host"
+                        />
+                    </Box>
+                    {/* <Box>
             <Typography component="dt" fontWeight={600}>IPC Mode:</Typography>
             <Select
               name="ipc"
@@ -325,8 +369,8 @@ export default function DeployDockerImage() {
             </Select>
           </Box> */}
 
-        </Box>
-        {/* <Box sx={{ mt: 3 }}>
+                </Box>
+                {/* <Box sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -379,10 +423,10 @@ export default function DeployDockerImage() {
               />
             </Grid> */}
 
-            {/* Add more fields as needed */}
-          {/* </Grid>
+                {/* Add more fields as needed */}
+                {/* </Grid>
         </Box>*/}
-      </Collapse> 
+            </Collapse>
 
             <Box sx={{ mt: 3 }}>
                 <Button
