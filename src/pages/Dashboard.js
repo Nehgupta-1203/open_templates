@@ -28,10 +28,10 @@ export default function Dashboard() {
         try {
             if(action === 'restart') {
                 await axios.post('/restart_container', { container_id: containerId });
-                 setContainerStatus(`Restarted container with id ${container_id}`)
+                 setContainerStatus(`Restarted container with id ${containerId}`)
             } else if(action === 'stop') {
                 await axios.post('/stop_container', { container_id: containerId });
-                setContainerStatus(`Stopped container with id ${container_id}`)
+                setContainerStatus(`Stopped container with id ${containerId}`)
             }
             fetchContainersFromVM()
         } catch (ex) {
